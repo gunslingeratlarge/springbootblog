@@ -1,4 +1,4 @@
-package cn.kvmial.blog;
+package cn.kvmial.blog.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
