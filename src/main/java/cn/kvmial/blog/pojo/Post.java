@@ -1,5 +1,7 @@
 package cn.kvmial.blog.pojo;
 
+import cn.kvmial.blog.util.DateUtils;
+
 import java.util.Date;
 
 /**
@@ -36,6 +38,29 @@ public class Post {
     private String category;
     private Date gmtCreate;
     private Date gmtModified;
+
+
+    /**
+     * 方便字段
+     */
+    private String gmtCreateStr;
+    private String gmtModifiedStr;
+
+    public String getGmtCreateStr() {
+        return gmtCreateStr;
+    }
+
+    public void setGmtCreateStr(String gmtCreateStr) {
+        this.gmtCreateStr = gmtCreateStr;
+    }
+
+    public String getGmtModifiedStr() {
+        return gmtModifiedStr;
+    }
+
+    public void setGmtModifiedStr(String gmtModifiedStr) {
+        this.gmtModifiedStr = gmtModifiedStr;
+    }
 
     public Integer getId() {
         return id;
@@ -115,6 +140,9 @@ public class Post {
 
     public void setGmtCreate(Date gmtCreate) {
         this.gmtCreate = gmtCreate;
+        if (gmtCreate != null) {
+            gmtCreateStr = DateUtils.dateTimeToStr(gmtCreate);
+        }
     }
 
     public Date getGmtModified() {
@@ -123,6 +151,9 @@ public class Post {
 
     public void setGmtModified(Date gmtModified) {
         this.gmtModified = gmtModified;
+        if (gmtModified != null) {
+            gmtModifiedStr = DateUtils.dateTimeToStr(gmtModified);
+        }
     }
 
     public Post(Integer id, String title, String markdownPath, Integer likeNum, Integer commentNum, Integer readNum, Integer status, Boolean sticky, String category, Date gmtCreate, Date gmtModified) {

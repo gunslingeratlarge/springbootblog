@@ -17,19 +17,15 @@ layui.use(['table', 'jquery','form', 'admin'], function() {
 			}, {
 				field: 'id',title: 'ID',sort: true
 			}, {
-				field: 'title',title: '标题',templet: '#usernameTpl'
+				field: 'title',title: '标题',
 			}, {
-				field: 'date',title: '发布时间',sort: true
+				field: 'gmtCreate',title: '发布时间',sort: true
 			}, {
 				field: 'category',title: '分类',sort: true
-			}, {
-				field: 'sort',title: '排序',sort: true
-			}, {
-				field: 'recommend',title: '推荐',templet: '#recommendTpl',unresize: true
-			}, {
+			},{
+                field: 'likeNum',title: '点赞数',sort: true
+            }, {
 				field: 'top',title: '置顶',templet: '#topTpl',unresize: true
-			}, {
-				field: 'review',title: '审核',templet: '#reviewTpl',unresize: true
 			}, {
 				field: 'operate',title: '操作',toolbar: '#operateTpl',unresize: true
 			}]
