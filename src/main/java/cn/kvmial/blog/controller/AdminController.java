@@ -3,7 +3,6 @@ package cn.kvmial.blog.controller;
 import cn.kvmial.blog.pojo.Post;
 import cn.kvmial.blog.service.AdminService;
 import cn.kvmial.blog.util.LayUIPage;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.plaf.LayerUI;
-import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,7 +45,7 @@ public class AdminController {
         return "admin/page/posts";
     }
 
-    @GetMapping("uploadPost")
+    @GetMapping("postUpload")
     public String uploadPostView() {
         return "admin/page/postUpload";
     }
@@ -70,15 +67,8 @@ public class AdminController {
 
     @PostMapping("uploadPost")
     @ResponseBody
-    public String uploadPost(MultipartFile file) {
-        System.out.println(this.getClass().getClassLoader().getResource("").getPath());
-        //File newFile = new File( this.getClass().getClassLoader().getResource("/").getPath() + "/" + file.getOriginalFilename());
-//        try {
-//            file.transferTo(newFile);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        return "success";
+    public HashMap<String,Object> uploadPost(MultipartFile file, Post post) {
+        HashMap<String, Object> map = service.uploadPost(file, post);
+        return map;
     }
 }

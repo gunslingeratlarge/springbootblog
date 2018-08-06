@@ -1,14 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>本地文章上传</title>
-</head>
-<body>
-    <form name="Form2" action="/admin/uploadPost" method="post" enctype="multipart/form-data">
-        <h1>采用multipart提供的file.transfer方法上传文件</h1>
-        <input type="file" name="file">
-        <input type="submit" value="upload"/>
-    </form>
-</body>
+<html xmlns:th="http://www.thymeleaf.org">
+	<!--
+	作者：github.com/WangEn
+	时间：2018-02-02
+	描述：上传本地笔记
+-->
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../../res/admin/static/css/font.css" th:href="@{/res/admin/static/css/font.css}">
+		<link rel="stylesheet" href="../../../res/admin/static/css/weadmin.css" th:href="@{/res/admin/static/css/weadmin.css}">
+		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+		<!--[if lt IE 9]>
+	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+	</head>
+
+	<body>
+		<div class="weadmin-body">
+
+			<form id="form1" class="layui-form" enctype="multipart/form-data">
+				<!--表单元素goes here-->
+				<div class="layui-form-item">
+					<label class="layui-form-label">文章标题</label>
+					<div class="layui-input-block">
+						<input type="text" name="title" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+					</div>
+                </div>
+
+                <!--status-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">文章状态</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="status" value="1" title="发布" checked>
+                        <input type="radio" name="status" value="2" title="草稿">
+                        <input type="radio" name="status" value="3" title="回收站" disabled>
+                    </div>
+                </div>
+
+
+                <!--文章分类-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">文章分类</label>
+                    <div class="layui-input-block">
+                        <select name="city" lay-verify="required">
+                            <option value=""></option>
+                            <option value="1">区块链</option>
+                            <option value="2">JavaEE</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 是否置顶 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">置顶</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="sticky" lay-skin="switch" lay-text="ON|OFF" value="1">
+                    </div>
+                </div>
+
+                <!--先单独上传文件，这里获得它的id-->
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="button" class="layui-btn" id="uploadBtn">
+                            <i class="layui-icon">&#xe67c;</i>上传文章
+                        </button>
+                    </div>
+                </div>
+
+
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit="" lay-filter="add" id="submitBtn">立即提交</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<script src="../../lib/layui/layui.js" th:src="@{/res/admin/lib/layui/layui.js}" charset="utf-8"></script>
+		<script type="text/javascript">
+			layui.extend({
+                admin:'/res/admin/static/js/admin'
+			});
+			layui.use(['admin','jquery','form', 'layer','upload'], function() {
+				var admin = layui.admin,
+					$ = layui.jquery,
+					form = layui.form,
+					layer = layui.layer,
+                    upload = layui.upload;
+
+				//监听提交
+				form.on('submit(add)', function(data) {
+					console.log(data.field);
+					// 异步ajax
+                    $.ajax({
+                        url: '/admin/uploadPost',
+                        type: 'POST',
+                        cache: false,
+                        data: data.field,
+                        contentType: false,   //ajax 中 contentType 设置为 false 是为了避免 JQuery 对其操作，从而失去分界符，而使服务器不能正常解析文件
+                        processData: false
+                    });
+					layer.alert("增加成功", {
+						icon: 6
+					}, function() {
+						// 获得frame索引
+						var index = parent.layer.getFrameIndex(window.name);
+						//关闭当前frame
+						parent.layer.close(index);
+					});
+					return false;
+				});
+
+			});
+		</script>
+	</body>
+
 </html>

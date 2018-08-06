@@ -35,6 +35,7 @@ public class Post {
     private Integer readNum;
     private Integer status;
     private Boolean sticky;
+    private Integer cid;
     private String category;
     private Date gmtCreate;
     private Date gmtModified;
@@ -134,6 +135,14 @@ public class Post {
         this.category = category;
     }
 
+    public Integer getCid() {
+        return cid;
+    }
+
+    public void setCid(Integer cid) {
+        this.cid = cid;
+    }
+
     public Date getGmtCreate() {
         return gmtCreate;
     }
@@ -156,22 +165,24 @@ public class Post {
         }
     }
 
-    public Post(Integer id, String title, String markdownPath, Integer likeNum, Integer commentNum, Integer readNum, Integer status, Boolean sticky, String category, Date gmtCreate, Date gmtModified) {
-        super();
-        this.id = id;
-        this.title = title;
-        this.markdownPath = markdownPath;
-        this.likeNum = likeNum;
-        this.commentNum = commentNum;
-        this.readNum = readNum;
-        this.status = status;
-        this.sticky = sticky;
-        this.category = category;
-        this.gmtCreate = gmtCreate;
-        this.gmtModified = gmtModified;
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", markdownPath='" + markdownPath + '\'' +
+                ", likeNum=" + likeNum +
+                ", commentNum=" + commentNum +
+                ", readNum=" + readNum +
+                ", status=" + status +
+                ", sticky=" + sticky +
+                ", cid=" + cid +
+                ", category='" + category + '\'' +
+                ", gmtCreate=" + gmtCreate +
+                ", gmtModified=" + gmtModified +
+                ", gmtCreateStr='" + gmtCreateStr + '\'' +
+                ", gmtModifiedStr='" + gmtModifiedStr + '\'' +
+                '}';
     }
 
-    public Post() {
-        super();
-    }
 }
