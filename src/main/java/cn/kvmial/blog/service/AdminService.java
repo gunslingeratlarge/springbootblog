@@ -2,12 +2,12 @@ package cn.kvmial.blog.service;
 
 import cn.kvmial.blog.mapper.PostMapper;
 import cn.kvmial.blog.pojo.Post;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -82,5 +82,50 @@ public class AdminService {
             return String.format("%s%s.kvmialBlog", System.getProperty("user.home"), File.separator);
         }
     }
+
+    public JSONObject getMarkdown(Integer id) {
+        // 首先获得path，再通过path到文件系统中读取
+        JSONObject jsonObject = new JSONObject();
+        Post post = postMapper.getPostById(id);
+        if(post == null) {
+            jsonObject.put("msg","没有该id的文件");
+            jsonObject.put("success",false);
+            return jsonObject;
+        }
+
+        String path = post.getMarkdownPath();
+        if (path == null) {
+            jsonObject.put("msg","没有markdown路径");
+            jsonObject.put("success",false);
+            return jsonObject;
+        }
+
+        File file = new File(setUploadFileDirectory(),path);
+        String encoding = "UTF-8";
+        Long fileLength = file.length();
+        byte[] fileContent = new byte[fileLength.intValue()];
+        try {
+            FileInputStream in = new FileInputStream(file);
+            BufferedInputStream bin = new BufferedInputStream(in);
+            bin.read(fileContent);
+            in.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            String markDown = new String(fileContent, encoding);
+            jsonObject.put("success",true);
+            jsonObject.put("data", markDown);
+            return jsonObject;
+        } catch (UnsupportedEncodingException e) {
+            jsonObject.put("success",false);
+            jsonObject.put("msg", "OS不支持的编码格式");
+            e.printStackTrace();
+            return jsonObject;
+        }
+    }
+
 
 }

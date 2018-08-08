@@ -323,6 +323,8 @@ layui.define(['jquery', 'form', 'layer', 'element'], function(exports) {
 			content: url
 		});
 	}
+
+	// 这个就是上面的那个的基础上添加了回调，所以是在子页面完全打开之后再调用回调，那还玩个蛇皮怪。
 	/*弹出层+传递ID参数*/
 	window.WeAdminEdit = function(title, url, id, w, h) {
 		if(title == null || title == '') {
@@ -349,14 +351,20 @@ layui.define(['jquery', 'form', 'layer', 'element'], function(exports) {
 			success: function(layero, index) {
 				//向iframe页的id=house的元素传值  // 参考 https://yq.aliyun.com/ziliao/133150
 				var body = layer.getChildFrame('body', index);
-				body.contents().find("#dataId").val(id);
+                var iframeWin = window[layero.find('iframe')[0]['name']];
+                // iframeWin.shoutOut();
+                // iframeWin.id = id;
+                // iframeWin.howMuchQb();
+				// 给id为dataId的元素设置值
+				//body.contents().find("#dataId").val(id);
 				console.log(id);
+
 			},
 			error: function(layero, index) {
 				alert("aaa");
 			}
 		});
-	}
+	};
 
 	/**
 	 *@todo tab监听：点击tab项对应的关闭按钮事件

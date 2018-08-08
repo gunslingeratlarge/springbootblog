@@ -3,10 +3,12 @@ package cn.kvmial.blog.controller;
 import cn.kvmial.blog.pojo.Post;
 import cn.kvmial.blog.service.AdminService;
 import cn.kvmial.blog.util.LayUIPage;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +32,7 @@ public class AdminController {
     @Autowired
     AdminService service;
 
-    @GetMapping
+    @GetMapping(value={"/","/index",""})
     public String indexView() {
         return "admin/index";
     }
@@ -43,6 +45,12 @@ public class AdminController {
     @GetMapping(value="posts")
     public String postView() {
         return "admin/page/posts";
+    }
+
+    @GetMapping("editor")
+    public String editorView(Integer id,Model m) {
+        m.addAttribute("id",id);
+        return "admin/page/editor";
     }
 
     @GetMapping("postUpload")
@@ -68,7 +76,29 @@ public class AdminController {
     @PostMapping("uploadPost")
     @ResponseBody
     public HashMap<String,Object> uploadPost(MultipartFile file, Post post) {
-        HashMap<String, Object> map = service.uploadPost(file, post);
+        if (post.getSticky() == null) {
+            post.setSticky(false);
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        if (file == null) {
+            map.put("success",false);
+            map.put("msg", "文件为空");
+        }
+        map = service.uploadPost(file, post);
         return map;
+    }
+
+    @RequestMapping("getMarkdown")
+    @ResponseBody
+    public JSONObject getMarkdown(Integer id) {
+        JSONObject jsonObject = new JSONObject();
+        if (id == null) {
+            jsonObject.put("success",false);
+            jsonObject.put("msg", "id不能为空");
+            return jsonObject;
+        } else {
+            return service.getMarkdown(id);
+
+        }
     }
 }

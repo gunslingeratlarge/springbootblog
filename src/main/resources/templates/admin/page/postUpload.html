@@ -18,6 +18,42 @@
 	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
 	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
 	    <![endif]-->
+        <style>
+            .file {
+                position: relative;
+                display: inline-block;
+                background: #D0EEFF;
+                border: 1px solid #99D3F5;
+                border-radius: 4px;
+                padding: 4px 12px;
+                overflow: hidden;
+                color: #1E88C7;
+                text-decoration: none;
+                text-indent: 0;
+                line-height: 20px;
+            }
+            .file input {
+                position: absolute;
+                font-size: 100px;
+                right: 0;
+                top: 0;
+                opacity: 0;
+            }
+            .file:hover {
+                background: #AADFFD;
+                border-color: #78C3F3;
+                color: #004974;
+                text-decoration: none;
+            }
+
+            .showFileName {
+                line-height:30px;
+                display:inline-block;
+                vertical-align: top;
+                color:#004974;
+
+            }
+        </style>
 	</head>
 
 	<body>
@@ -47,7 +83,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">文章分类</label>
                     <div class="layui-input-block">
-                        <select name="city" lay-verify="required">
+                        <select name="cid" lay-verify="required">
                             <option value=""></option>
                             <option value="1">区块链</option>
                             <option value="2">JavaEE</option>
@@ -65,15 +101,22 @@
 
                 <!--先单独上传文件，这里获得它的id-->
 
+                <!--<div class="layui-form-item">-->
+                    <!--<div class="layui-input-block">-->
+                        <!--<button type="button" class="layui-btn" id="uploadBtn">-->
+                            <!--<i class="layui-icon">&#xe67c;</i>上传文章-->
+                        <!--</button>-->
+                    <!--</div>-->
+                <!--</div>-->
                 <div class="layui-form-item">
                     <div class="layui-input-block">
-                        <button type="button" class="layui-btn" id="uploadBtn">
-                            <i class="layui-icon">&#xe67c;</i>上传文章
-                        </button>
+                        <a href="javascript:;" class="file">
+                            <i class="layui-icon">&#xe67c;</i>选择文件
+                            <input type="file" name="file" id="postFile">
+                        </a>
+                        <span class="showFileName"></span>
                     </div>
                 </div>
-
-
 				<div class="layui-form-item">
 					<div class="layui-input-block">
 						<button class="layui-btn" lay-submit="" lay-filter="add" id="submitBtn">立即提交</button>
@@ -84,6 +127,7 @@
 		</div>
 		<script src="../../lib/layui/layui.js" th:src="@{/res/admin/lib/layui/layui.js}" charset="utf-8"></script>
 		<script type="text/javascript">
+
 			layui.extend({
                 admin:'/res/admin/static/js/admin'
 			});
@@ -94,27 +138,64 @@
 					layer = layui.layer,
                     upload = layui.upload;
 
+                // 选择文件后出现文件名
+                $(".file").on("change","input[type='file']",function(){
+                    var filePath=$(this).val();
+                    var arr = filePath.split('\\');
+                    var fileName = arr[arr.length - 1];
+                    $(".showFileName").html(fileName);
+                });
+
 				//监听提交
 				form.on('submit(add)', function(data) {
 					console.log(data.field);
-					// 异步ajax
+                    // 判断是否有文件
+                    var fileName = $(".showFileName").html();
+                    if (fileName === "") {
+                        layer.msg('未上传文件', {icon: 2});
+                        return false;
+                    }
+
+                    // 异步ajax
+                    var formData = new FormData();
+                    var uploadFile = $('#postFile').get(0).files[0];
+                    // 	var uploadFile = new FormData($("#file")[0]);
+                    formData.append("file",uploadFile);
+                    if (data.field.sticky == 1) {
+                        formData.append("sticky", data.field.sticky);
+                    } else {
+                        formData.append("sticky","0");
+                    }
+                    formData.append("title", data.field.title);
+                    formData.append("status", data.field.status);
+                    formData.append("cid", data.field.cid);
+
                     $.ajax({
                         url: '/admin/uploadPost',
                         type: 'POST',
                         cache: false,
-                        data: data.field,
+                        data: formData,
                         contentType: false,   //ajax 中 contentType 设置为 false 是为了避免 JQuery 对其操作，从而失去分界符，而使服务器不能正常解析文件
-                        processData: false
+                        processData: false,
+                        success:function (data) {
+                            if (data.success) {
+                                layer.alert("增加成功", {
+                                    icon: 6
+                                }, function() {
+                                    // 获得frame索引
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    //关闭当前frame
+                                    parent.layer.close(index);
+                                    parent.location.reload();
+                                });
+                            } else {
+                                layer.alert('增加失败' + data.msg, {
+                                    icon: 5
+                                });
+                            }
+                            return false;
+                        }
                     });
-					layer.alert("增加成功", {
-						icon: 6
-					}, function() {
-						// 获得frame索引
-						var index = parent.layer.getFrameIndex(window.name);
-						//关闭当前frame
-						parent.layer.close(index);
-					});
-					return false;
 				});
 
 			});

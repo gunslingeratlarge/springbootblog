@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑博客</title>
+
+    <link rel="stylesheet" href="../../../res/editor/css/codemirror.css" th:href="@{/res/editor/css/codemirror.css}">
+    <link rel="stylesheet" href="../../../res/editor/css/github.css" th:href="@{/res/editor/css/github.css}">
+    <link rel="stylesheet" href="../../../res/editor/css/tui-editor.css" th:href="@{/res/editor/css/tui-editor.css}">
+    <link rel="stylesheet" href="../../../res/editor/css/tui-editor-contents.css" th:href="@{/res/editor/css/tui-editor-contents.css}">
+</head>
+<body>
+    <div id="editorSection"></div>
+    <script src="../../../res/editor/js/jquery-3.1.1.min.js" th:src="@{/res/editor/js/jquery-3.1.1.min.js}"></script>
+    <script src='../../../res/editor/js/markdown-it.js' th:src="@{/res/editor/js/markdown-it.js}"></script>
+    <script src="../../../res/editor/js/to-mark.js" th:src="@{/res/editor/js/to-mark.js}"></script>
+    <script src="../../../res/editor/js/tui-code-snippet.js" th:src="@{/res/editor/js/tui-code-snippet.js}"></script>
+    <script src="../../../res/editor/js/codemirror.js" th:src="@{/res/editor/js/codemirror.js}"></script>
+    <script src="../../../res/editor/js/highlight.js" th:src="@{/res/editor/js/highlight.js}"></script>
+    <script src="../../../res/editor/js/squire-raw.js" th:src="@{/res/editor/js/squire-raw.js}"></script>
+    <script src="../../../res/editor/js/tui-editor-Editor.js" th:src="@{/res/editor/js/tui-editor-Editor.js}"></script>
+    <script th:inline="javascript">
+        var id = [[${id}]];
+    </script>
+    <script>
+
+        var content = "### 大大的标题！！！";
+        console.log(id);
+        $.ajax({
+            url:"/admin/getMarkdown",
+            data:{
+                "id":id
+            },
+            type:"post",
+            async:false, //同步请求
+            cache:false,
+            success: function (ret) {
+                if (ret.success) {
+                    content = ret.data;
+                } else {
+                    // 如果success没能成功
+                    alert(JSON.stringify(ret));
+                }
+            }
+            }
+        );
+
+        var editor = new tui.Editor({
+            el: document.querySelector('#editorSection'),
+            previewStyle: 'vertical',
+            height: '800px',
+            initialEditType: 'markdown',
+            initialValue: content
+        });
+
+        var markdown = editor.getMarkdown();
+
+    </script>
+</body>
+</html>
