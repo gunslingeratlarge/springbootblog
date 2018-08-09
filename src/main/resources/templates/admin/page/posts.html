@@ -93,11 +93,11 @@
         <button class="layui-btn" data-type="Review"><i class="layui-icon">&#xe6b2;</i>审核</button>
         <button class="layui-btn" onclick="WeAdminShow('添加笔记','./add.html',600,400)"><i class="layui-icon">&#xe642;</i>添加
         </button>
-        <button class="layui-btn" onclick="WeAdminShow('上传笔记','/admin/postUpload',600,400)"><i class="layui-icon">&#xe61f;</i>上传
+        <button class="layui-btn" onclick="WeAdminShow('上传笔记','/admin/post/postUpload',600,400)"><i class="layui-icon">&#xe61f;</i>上传
         </button>
         <span class="fr" style="line-height:40px">共有数据：88 条</span>
     </div>
-    <table class="layui-hide" id="articleList"></table>
+    <table class="layui-hide" id="postList"></table>
 
     <script type="text/html" id="topTpl">
         {{#  if(d.sticky == 1){ }}
@@ -119,13 +119,13 @@
     </script>
 
     <script type="text/html" id="operateTpl">
-      <a title="编辑" onclick="WeAdminShow('编辑','editor?id={{d.id}}', 800, 500)" href="javascript:;">
+      <a title="编辑" onclick="WeAdminShow('编辑','post/editor?id={{d.id}}', 800, 500)" href="javascript:;">
           <i class="layui-icon">&#xe642;</i>
         </a>
         <a title="查看" onclick="WeAdminShow('查看文章','./show.html',600,400)" href="javascript:;">
             <i class="layui-icon">&#xe63c;</i>
         </a>
-        <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
+        <a title="删除" onclick="member_del(this,{{d.id}})" href="javascript:;">
             <i class="layui-icon">&#xe640;</i>
         </a>
     </script>
@@ -144,7 +144,7 @@
                 admin = layui.admin;
 
             table.render({
-                elem: '#articleList',
+                elem: '#postList',
                 //  cellMinWidth: 80,
                 cols: [
                     [{
@@ -173,7 +173,7 @@
                         field: 'operate', title: '操作', toolbar: '#operateTpl', width: 100
                     }]
                 ],
-                url: "/admin/listPosts",
+                url: "/admin/post/listPosts",
                 event: true,
                 page: true
             });
@@ -187,17 +187,47 @@
 
             var active = {
                 getCheckData: function () { //获取选中数据
-                    var checkStatus = table.checkStatus('articleList'),
-                        data = checkStatus.data;
+                    var checkStatus = table.checkStatus('postList');
+                    var data = checkStatus.data;
                     //console.log(data);
                     //layer.alert(JSON.stringify(data));
                     if (data.length > 0) {
                         layer.confirm('确认要删除吗？' + JSON.stringify(data), function (index) {
-                            layer.msg('删除成功', {
-                                icon: 1
-                            });
+
                             //找到所有被选中的，发异步进行删除
+                            //
+                            console.log(data);
+                            var ids = "";
+                            for(var j = 0,len = data.length; j < len; j++){
+                                if (j !== len - 1){
+                                    ids += data[j].id + ",";
+                                } else {
+                                    ids += data[j].id;
+                                }
+
+                            }
+                            console.log(ids);
+
+                            $.ajax({
+                                url:"/admin/post/delete",
+                                async:true,
+                                contentType:'application/json; charset=utf-8',
+                                dataType:'application/json; charset=utf-8',
+                                method:'get',
+                                data: {
+                                    ids:ids
+                                },
+                                success: function(data) {
+                                    if (data.success) {
+                                        layer.msg('删除成功', {
+                                            icon: 1
+                                        });
+                                    }
+
+                                }
+                            });
                             $(".layui-table-body .layui-form-checked").parents('tr').remove();
+                            layer.close(index);
                         });
                     } else {
                         layer.msg("请先选择需要删除的文章！");
@@ -205,7 +235,7 @@
 
                 },
                 Recommend: function () {
-                    var checkStatus = table.checkStatus('articleList'),
+                    var checkStatus = table.checkStatus('postList'),
                         data = checkStatus.data;
                     if (data.length > 0) {
                         layer.msg("您点击了推荐操作");

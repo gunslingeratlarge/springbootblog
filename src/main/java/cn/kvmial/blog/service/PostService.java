@@ -1,9 +1,12 @@
 package cn.kvmial.blog.service;
 
+import cn.kvmial.blog.exception.TipException;
 import cn.kvmial.blog.mapper.PostMapper;
 import cn.kvmial.blog.pojo.Post;
+import cn.kvmial.blog.pojo.Result;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -22,7 +25,7 @@ import java.util.UUID;
  */
 
 @Service
-public class AdminService {
+public class PostService {
 
     @Resource
     private PostMapper postMapper;
@@ -31,7 +34,17 @@ public class AdminService {
         return postMapper.listPosts();
     }
 
-    public HashMap<String,Object> uploadPost(MultipartFile file, Post post) {
+    public void batchDeletePosts(List<Integer> ids) {
+        // 这里应该对返回值进行一下检查
+        int len = ids.size();
+        int deleteInt = postMapper.batchDeletePosts(ids);
+        if (deleteInt != len) {
+            throw new TipException("数据库返回值与删除id数不一致");
+        }
+    }
+
+    public JSONObject uploadPost(MultipartFile file, Post post) {
+
         String originalFilename = file.getOriginalFilename();
         String fileName = originalFilename.substring(0,originalFilename.indexOf('.'));
         if (postMapper.getPostByPath(fileName + ".md") != null) {
@@ -40,14 +53,14 @@ public class AdminService {
         String filePath = fileName + ".md";
 
         File newFile = new File(setUploadFileDirectory(),filePath);
-        HashMap<String,Object> map = new HashMap<>(3);
+        JSONObject jsonObject = new JSONObject();
         try {
             file.transferTo(newFile);
         } catch (IOException e) {
             e.printStackTrace();
-            map.put("success",false);
-            map.put("msg","文件transfer异常");
-            return map;
+            jsonObject.put("success",false);
+            jsonObject.put("msg","文件transfer异常");
+            return jsonObject;
         }
         // 如果上传成功了
         post.setGmtCreate(new Date());
@@ -57,8 +70,8 @@ public class AdminService {
             post.setTitle(fileName);
         }
         postMapper.insertPost(post);
-        map.put("success",true);
-        return map;
+        jsonObject.put("success",true);
+        return jsonObject;
 
     }
 

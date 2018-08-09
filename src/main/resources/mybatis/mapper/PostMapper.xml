@@ -25,6 +25,13 @@
         gmt_create,gmt_modified) VALUES (#{title},#{markdownPath},#{likeNum},#{commentNum},#{readNum},#{status},#{sticky},#{cid},
                                              #{gmtCreate},#{gmtModified})
     </insert>
+
+    <delete id="batchDeletePosts" parameterType="Integer">
+        delete from `blog_post` where `id` in
+        <foreach item="postId" collection="list" open="(" separator="," close=")">
+            #{postId}
+        </foreach>
+    </delete>
     <resultMap id="postMap" type="Post" autoMapping="true">
         <result property="sticky" column="is_sticky" />
     </resultMap>

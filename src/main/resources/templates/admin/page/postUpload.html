@@ -171,13 +171,16 @@
                     formData.append("cid", data.field.cid);
 
                     $.ajax({
-                        url: '/admin/uploadPost',
+                        url: '/admin/post/uploadPost',
                         type: 'POST',
+                        dataType:'json',
                         cache: false,
                         data: formData,
+                        async:false, // 这里必须得改变为同步提交，否则已经return false了就阻止事件
                         contentType: false,   //ajax 中 contentType 设置为 false 是为了避免 JQuery 对其操作，从而失去分界符，而使服务器不能正常解析文件
                         processData: false,
                         success:function (data) {
+                            console.log(data);
                             if (data.success) {
                                 layer.alert("增加成功", {
                                     icon: 6
@@ -193,9 +196,12 @@
                                     icon: 5
                                 });
                             }
-                            return false;
+                        },
+                        error:function (data) {
+                            alert(JSON.stringify(data));
                         }
                     });
+                    return false; //阻止提交要写在这里
 				});
 
 			});

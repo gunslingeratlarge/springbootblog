@@ -57,4 +57,11 @@ public interface PostMapper {
      * @return 插入值
      */
     int insertPost(Post post);
+
+    /**
+     * 批量删除文章
+     * @param ids 要删除的id值
+     * @return 删除条数
+     */
+    int batchDeletePosts(List<Integer> ids);
 }
