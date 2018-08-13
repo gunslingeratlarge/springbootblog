@@ -73,7 +73,11 @@ public class PostController {
     }
 
 
-
+    /**
+     * 读取post的markdown文件，单独的接口
+     * @param id 读取哪个post
+     * @return
+     */
     @RequestMapping("getMarkdown")
     @ResponseBody
     public JSONObject getMarkdown(Integer id) {
@@ -87,6 +91,29 @@ public class PostController {
         }
     }
 
+    @RequestMapping(value="getPost")
+    @ResponseBody
+    public Result getPost(Integer id) {
+        Post post = null;
+        try {
+            post = postService.getPost(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e instanceof TipException) {
+               return Result.fail(e.getMessage());
+            } else {
+                return Result.fail("获取post错误");
+            }
+        }
+        return Result.ok(post);
+    }
+
+
+    /**
+     * 删除post
+     * @param ids 需要删除的id，用逗号分隔
+     * @return 结果
+     */
     @RequestMapping("delete")
     @ResponseBody
     public Result batchDeletePosts(@RequestParam(value = "ids") String ids) {

@@ -8,9 +8,50 @@
     <link rel="stylesheet" href="../../../res/editor/css/github.css" th:href="@{/res/editor/css/github.css}">
     <link rel="stylesheet" href="../../../res/editor/css/tui-editor.css" th:href="@{/res/editor/css/tui-editor.css}">
     <link rel="stylesheet" href="../../../res/editor/css/tui-editor-contents.css" th:href="@{/res/editor/css/tui-editor-contents.css}">
+    <link rel="stylesheet" href="../../../res/layui/css/layui.css" th:href="@{/res/layui/css/layui.css}" media="all">
+    <style>
+        .title {
+            float:left;
+            margin:10px 20px;
+            width:60%;
+        }
+
+        /*.title input {*/
+            /*float:left;*/
+        /*}*/
+
+        .operate button {
+            float:right !important;
+            margin:10px 5px;
+        }
+
+
+        .clearfix:after {
+            content:" ";
+            clear:both;
+            display:block;
+            visibility:hidden;
+            height:0;
+            line-height:0;
+        }
+
+        .clearfix {
+            zoom:1;
+        }
+    </style>
 </head>
 <body>
+
+    <div class="operate clearfix">
+        <div class="title">
+            <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+        </div>
+
+        <button class="layui-btn layui-btn-normal layui-btn-radius">保存</button>
+        <button class="layui-btn  layui-btn-primary layui-btn-radius">保存并退出</button>
+    </div>
     <div id="editorSection"></div>
+
     <script src="../../../res/editor/js/jquery-3.1.1.min.js" th:src="@{/res/editor/js/jquery-3.1.1.min.js}"></script>
     <script src='../../../res/editor/js/markdown-it.js' th:src="@{/res/editor/js/markdown-it.js}"></script>
     <script src="../../../res/editor/js/to-mark.js" th:src="@{/res/editor/js/to-mark.js}"></script>
@@ -27,7 +68,7 @@
         var content = "### 大大的标题！！！";
         console.log(id);
         $.ajax({
-            url:"/admin/getMarkdown",
+            url:"/admin/post/getMarkdown",
             data:{
                 "id":id
             },
@@ -48,10 +89,31 @@
         var editor = new tui.Editor({
             el: document.querySelector('#editorSection'),
             previewStyle: 'vertical',
-            height: '800px',
+            height: 'auto',
             initialEditType: 'markdown',
             initialValue: content
         });
+
+        $.post(
+            {
+                //dataType:'application/json',
+                url:'/admin/post/getPost',
+                data:{
+                    "id":id
+                },
+                cache:false,
+                success: function (ret) {
+                    console.log(ret);
+                    if (ret.success) {
+                        console.log($("input[name='title']"));
+                        $("input[name='title']").val(ret.data.title);
+                    }
+                },
+                error: function (ret) {
+                    console.log(ret);
+                }
+            }
+        );
 
         var markdown = editor.getMarkdown();
 

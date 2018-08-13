@@ -312,7 +312,7 @@ layui.define(['jquery', 'form', 'layer', 'element'], function(exports) {
 		if(h == null || h == '') {
 			h = ($(window).height() - 50);
 		};
-		layer.open({
+		parent.layer.open({
 			type: 2,
 			area: [w + 'px', h + 'px'],
 			fix: false, //不固定
@@ -323,6 +323,34 @@ layui.define(['jquery', 'form', 'layer', 'element'], function(exports) {
 			content: url
 		});
 	}
+
+
+    window.WeAdminShowMax = function(title, url, w, h) {
+        if(title == null || title == '') {
+            title = false;
+        };
+        if(url == null || url == '') {
+            url = "404.html";
+        };
+        if(w == null || w == '') {
+            w = ($(window).width() * 0.9);
+        };
+        if(h == null || h == '') {
+            h = ($(window).height() - 50);
+        };
+        var index = parent.layer.open({
+            type: 2,
+            area: [w + 'px', h + 'px'],
+            fix: false, //不固定
+            maxmin: true,
+            shadeClose: true,
+            shade: 0.4,
+            title: title,
+            content: url
+        });
+        parent.layer.full(index);
+
+    };
 
 	// 这个就是上面的那个的基础上添加了回调，所以是在子页面完全打开之后再调用回调，那还玩个蛇皮怪。
 	/*弹出层+传递ID参数*/

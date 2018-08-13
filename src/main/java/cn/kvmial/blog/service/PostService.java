@@ -3,16 +3,13 @@ package cn.kvmial.blog.service;
 import cn.kvmial.blog.exception.TipException;
 import cn.kvmial.blog.mapper.PostMapper;
 import cn.kvmial.blog.pojo.Post;
-import cn.kvmial.blog.pojo.Result;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,10 +34,22 @@ public class PostService {
     public void batchDeletePosts(List<Integer> ids) {
         // 这里应该对返回值进行一下检查
         int len = ids.size();
-        int deleteInt = postMapper.batchDeletePosts(ids);
-        if (deleteInt != len) {
-            throw new TipException("数据库返回值与删除id数不一致");
+        // 先删文件，要不然都不知道文件在哪儿
+        for (int id:ids){
+            Post postById = postMapper.getPostById(id);
+            String fileName = postById.getMarkdownPath();
+            File file = new File(setUploadFileDirectory(), fileName);
+            if (file.exists() && file.isFile()) {
+                boolean isDeleted = file.delete();
+            }
         }
+
+        int deleteInt = postMapper.batchDeletePosts(ids);
+
+        if (deleteInt != len) {
+             throw new TipException("数据库返回值与删除id数不一致");
+        }
+
     }
 
     public JSONObject uploadPost(MultipartFile file, Post post) {
@@ -138,6 +147,14 @@ public class PostService {
             e.printStackTrace();
             return jsonObject;
         }
+    }
+
+    public Post getPost(Integer id) {
+        Post postById = postMapper.getPostById(id);
+        if (postById == null) {
+            throw new TipException("没有该post");
+        }
+        return postById;
     }
 
 

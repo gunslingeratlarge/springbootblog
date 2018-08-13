@@ -119,7 +119,7 @@
     </script>
 
     <script type="text/html" id="operateTpl">
-      <a title="编辑" onclick="WeAdminShow('编辑','post/editor?id={{d.id}}', 800, 500)" href="javascript:;">
+      <a title="编辑" onclick="WeAdminShowMax('编辑','/admin/post/editor?id={{d.id}}', 800, 500)" href="javascript:;">
           <i class="layui-icon">&#xe642;</i>
         </a>
         <a title="查看" onclick="WeAdminShow('查看文章','./show.html',600,400)" href="javascript:;">
@@ -143,7 +143,7 @@
                 form = layui.form,
                 admin = layui.admin;
 
-            table.render({
+            var tableIns = table.render({
                 elem: '#postList',
                 //  cellMinWidth: 80,
                 cols: [
@@ -162,9 +162,9 @@
                     }, {
                         field: 'category', title: '分类', sort: true, width: 80
                     }, {
-                        field: 'gmtCreateStr', title: '创建时间', sort: true, width: 180
+                        field: 'gmtCreate', title: '创建时间', sort: true, width: 180
                     }, {
-                        field: 'gmtModifiedStr', title: '修改时间', sort: true, width: 180
+                        field: 'gmtModified', title: '修改时间', sort: true, width: 180
                     }, {
                         field: 'status', title: '状态', width: 80,templet:'#statusTpl'
                     }, {
@@ -226,7 +226,9 @@
 
                                 }
                             });
-                            $(".layui-table-body .layui-form-checked").parents('tr').remove();
+                            // $(".layui-table-body .layui-form-checked").parents('tr').remove();
+                            //
+                            tableIns.reload();
                             layer.close(index);
                         });
                     } else {
