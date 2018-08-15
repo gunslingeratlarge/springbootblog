@@ -21,7 +21,14 @@ public interface PostMapper {
      * 查询所有的文章
      * @return 所有的文章
      */
-    List<Post> listPosts();
+    List<Post> listPosts(Post post);
+
+    /**
+     * 算出有多少post的cid在ids中
+     * @param ids
+     * @return
+     */
+    Integer countPostsByCids(List<Integer> ids);
 
     /**
      * 根据文章的名称完全匹配查询
@@ -45,13 +52,6 @@ public interface PostMapper {
     Post getPostById(Integer id);
 
     /**
-     * 查询文章，根据多个字段模糊查询
-     * @param post 文章
-     * @return 文章列表
-     */
-    List<Post> listPost(Post post);
-
-    /**
      * 插入文章信息到db
      * @param post 文章
      * @return 插入值
@@ -64,4 +64,9 @@ public interface PostMapper {
      * @return 删除条数
      */
     int batchDeletePosts(List<Integer> ids);
+
+    /**
+     * 更新文章，将文章的数据库字段更新
+     */
+    int updatePost(Post post);
 }

@@ -4,27 +4,65 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="cn.kvmial.blog.mapper.PostMapper">
-    <select id="listPosts" resultMap="postMap">
-            select * from `blog_post`
+    <select id="listPosts" resultMap="postMap" parameterType="Post">
+        select *
+        from `blog_post`
+        <where>
+          <if test="id != null"> and id = #{id},</if>
+          <if test="title != null and title != ''"> and title like "%"#{title}"%",</if>
+          <if test="cid != null"> and cid = #{cid},</if>
+          <if test="status != null"> and status = #{status},</if>
+          <if test="sticky != null"> and is_sticky = #{sticky},</if>
+        </where>
     </select>
-    
+
+    <!--计算某一组分类总共有多少文章-->
+    <select id="countPostsByCids" parameterType="Integer" resultType="Integer">
+        select count(*) from blog_post where cid in
+        <foreach collection="list" item="postCid" open="(" separator="," close=")">
+            #{postCid}
+        </foreach>
+    </select>
+
     <select id="getPostByTitle" resultType="Post">
-        select * from `blog_post` where title = #{title}
+        select *
+        from `blog_post`
+        where title = #{title}
     </select>
 
     <select id="getPostByPath" resultType="Post">
-        select * from `blog_post` where markdown_path = #{markdownPath}
+        select *
+        from `blog_post`
+        where markdown_path = #{markdownPath}
     </select>
 
     <select id="getPostById" resultType="Post">
-        select * from `blog_post` where id = #{id}
+        select *
+        from `blog_post`
+        where id = #{id}
     </select>
 
-    <insert id="insertPost" useGeneratedKeys="true" parameterType="Post"  keyProperty="id">
-        INSERT INTO `blog_post`(title,markdown_path,like_num,comment_num,read_num,status,is_sticky,cid,
-        gmt_create,gmt_modified) VALUES (#{title},#{markdownPath},#{likeNum},#{commentNum},#{readNum},#{status},#{sticky},#{cid},
-                                             #{gmtCreate},#{gmtModified})
+    <insert id="insertPost" useGeneratedKeys="true" parameterType="Post" keyProperty="id">
+        INSERT INTO `blog_post` (title, markdown_path, like_num, comment_num, read_num, status, is_sticky, cid,
+                                 gmt_create, gmt_modified)
+        VALUES (#{title}, #{markdownPath}, #{likeNum}, #{commentNum}, #{readNum}, #{status}, #{sticky}, #{cid},
+                #{gmtCreate}, #{gmtModified})
     </insert>
+    <update id="updatePost" parameterType="Post">
+        UPDATE `blog_post`
+        <set>
+            <if test="title!=null and title != ''">title = #{title},</if>
+            <if test="markdownPath!=null and markdownPath != ''">markdown_path = #{markdownPath},</if>
+            <if test="likeNum!=null">like_num = #{likeNum},</if>
+            <if test="commentNum!=null">comment_num = #{commentNum},</if>
+            <if test="readNum!=null">read_num = #{readNum},</if>
+            <if test="status!=null">`status` = #{status},</if>
+            <if test="sticky!=null">sticky = #{sticky},</if>
+            <if test="cid!=null">cid = #{cid},</if>
+            <if test="gmtModified!=null">gmt_modified = #{gmtModified},</if>
+        </set>
+        where id = #{id}
+    </update>
 
     <delete id="batchDeletePosts" parameterType="Integer">
         delete from `blog_post` where `id` in
@@ -33,6 +71,6 @@
         </foreach>
     </delete>
     <resultMap id="postMap" type="Post" autoMapping="true">
-        <result property="sticky" column="is_sticky" />
+        <result property="sticky" column="is_sticky"/>
     </resultMap>
 </mapper>

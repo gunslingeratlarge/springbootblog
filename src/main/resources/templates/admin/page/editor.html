@@ -47,11 +47,11 @@
             <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
         </div>
 
-        <button class="layui-btn layui-btn-normal layui-btn-radius">保存</button>
-        <button class="layui-btn  layui-btn-primary layui-btn-radius">保存并退出</button>
+        <button class="layui-btn layui-btn-normal layui-btn-radius" onclick="update()">保存</button>
+        <button class="layui-btn  layui-btn-primary layui-btn-radius" onclick="updateAndClose()">保存并退出</button>
     </div>
     <div id="editorSection"></div>
-
+    <script src="/res/layui/layui.all.js" type="text/javascript"></script>
     <script src="../../../res/editor/js/jquery-3.1.1.min.js" th:src="@{/res/editor/js/jquery-3.1.1.min.js}"></script>
     <script src='../../../res/editor/js/markdown-it.js' th:src="@{/res/editor/js/markdown-it.js}"></script>
     <script src="../../../res/editor/js/to-mark.js" th:src="@{/res/editor/js/to-mark.js}"></script>
@@ -86,10 +86,11 @@
             }
         );
 
+
         var editor = new tui.Editor({
             el: document.querySelector('#editorSection'),
             previewStyle: 'vertical',
-            height: 'auto',
+            height: '800px',
             initialEditType: 'markdown',
             initialValue: content
         });
@@ -115,7 +116,38 @@
             }
         );
 
-        var markdown = editor.getMarkdown();
+        function update() {
+            var title = $("input[name='title']").val();
+            var markdown = editor.getMarkdown();
+            console.log(id);
+            $.ajax({
+                url:"/admin/post/updatePost",
+                data: {
+                    "id":id,
+                    "title":title,
+                    "markdown":markdown
+                },
+                method:'post',
+                success: function (ret) {
+                    if (ret.success) {
+                        console.log(ret);
+                        layer.msg("更新成功");
+                    }
+                },
+                error:function (ret) {
+                    console.log(ret);
+                }
+            });
+        }
+
+
+        function updateAndClose() {
+            update();
+            setTimeout(function() {
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+            },1000);
+        }
 
     </script>
 </body>

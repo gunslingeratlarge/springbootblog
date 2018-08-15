@@ -1,10 +1,12 @@
-package cn.kvmial.blog.service;
+package cn.kvmial.blog.service.impl;
 
 import cn.kvmial.blog.exception.TipException;
 import cn.kvmial.blog.mapper.PostMapper;
 import cn.kvmial.blog.pojo.Post;
+import cn.kvmial.blog.service.IPostService;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -22,15 +24,17 @@ import java.util.UUID;
  */
 
 @Service
-public class PostService {
+public class PostServiceImpl implements IPostService {
 
     @Resource
     private PostMapper postMapper;
 
-    public List<Post> listPosts() {
-        return postMapper.listPosts();
+    @Override
+    public List<Post> listPosts(Post post) {
+        return postMapper.listPosts(post);
     }
 
+    @Override
     public void batchDeletePosts(List<Integer> ids) {
         // 这里应该对返回值进行一下检查
         int len = ids.size();
@@ -38,7 +42,7 @@ public class PostService {
         for (int id:ids){
             Post postById = postMapper.getPostById(id);
             String fileName = postById.getMarkdownPath();
-            File file = new File(setUploadFileDirectory(), fileName);
+            File file = new File(getDefaultUploadFileDirectory(), fileName);
             if (file.exists() && file.isFile()) {
                 boolean isDeleted = file.delete();
             }
@@ -52,6 +56,24 @@ public class PostService {
 
     }
 
+    @Override
+    public void updatePost(Post post, String markdown) throws IOException {
+        if (post.getId() == null) {
+            throw new TipException("id不能为空");
+        }
+        post.setGmtModified(new Date());
+        // 写内容
+        String markdownPath = getPost(post.getId()).getMarkdownPath();
+        File file = new File(getDefaultUploadFileDirectory(), markdownPath);
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+        bufferedWriter.write(markdown,0,markdown.length());
+        bufferedWriter.flush();
+        bufferedWriter.close();
+
+        postMapper.updatePost(post);
+    }
+
+    @Override
     public JSONObject uploadPost(MultipartFile file, Post post) {
 
         String originalFilename = file.getOriginalFilename();
@@ -61,7 +83,7 @@ public class PostService {
         }
         String filePath = fileName + ".md";
 
-        File newFile = new File(setUploadFileDirectory(),filePath);
+        File newFile = new File(getDefaultUploadFileDirectory(),filePath);
         JSONObject jsonObject = new JSONObject();
         try {
             file.transferTo(newFile);
@@ -84,7 +106,23 @@ public class PostService {
 
     }
 
-    private static String setUploadFileDirectory() {
+    @Override
+    public void insertPost(Post post) throws IOException {
+        post.setGmtCreate(new Date());
+        post.setGmtModified(new Date());
+        String filename = post.getTitle() + ".md";
+        File file = new File(getDefaultUploadFileDirectory(), filename);
+        if (file.exists()) {
+            throw new TipException("文件已经存在，无法创建");
+        } else {
+            file.createNewFile();
+        }
+        post.setMarkdownPath(filename);
+        postMapper.insertPost(post);
+    }
+
+
+    private static String getDefaultUploadFileDirectory() {
         String directory = getDefaultUploadFileDirectory(System.getProperty("os.name"));
         File file = new File(directory);
         if (!file.exists()) {
@@ -92,6 +130,8 @@ public class PostService {
         }
         return directory;
     }
+
+
     private static String getDefaultUploadFileDirectory(String osName1) {
         String osName = osName1.toLowerCase();
         if (osName.startsWith("mac")) {
@@ -105,6 +145,7 @@ public class PostService {
         }
     }
 
+    @Override
     public JSONObject getMarkdown(Integer id) {
         // 首先获得path，再通过path到文件系统中读取
         JSONObject jsonObject = new JSONObject();
@@ -122,7 +163,7 @@ public class PostService {
             return jsonObject;
         }
 
-        File file = new File(setUploadFileDirectory(),path);
+        File file = new File(getDefaultUploadFileDirectory(),path);
         String encoding = "UTF-8";
         Long fileLength = file.length();
         byte[] fileContent = new byte[fileLength.intValue()];
@@ -149,6 +190,7 @@ public class PostService {
         }
     }
 
+    @Override
     public Post getPost(Integer id) {
         Post postById = postMapper.getPostById(id);
         if (postById == null) {

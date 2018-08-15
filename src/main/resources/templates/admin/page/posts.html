@@ -91,7 +91,7 @@
         <button class="layui-btn" data-type="Recommend"><i class="layui-icon">&#xe6c6;</i>推荐</button>
         <button class="layui-btn" data-type="Top"><i class="layui-icon">&#xe619;</i>置顶</button>
         <button class="layui-btn" data-type="Review"><i class="layui-icon">&#xe6b2;</i>审核</button>
-        <button class="layui-btn" onclick="WeAdminShow('添加笔记','./add.html',600,400)"><i class="layui-icon">&#xe642;</i>添加
+        <button class="layui-btn" onclick="WeAdminShow('添加笔记','/admin/post/postInsert',600,400)"><i class="layui-icon">&#xe642;</i>添加
         </button>
         <button class="layui-btn" onclick="WeAdminShow('上传笔记','/admin/post/postUpload',600,400)"><i class="layui-icon">&#xe61f;</i>上传
         </button>
@@ -192,7 +192,7 @@
                     //console.log(data);
                     //layer.alert(JSON.stringify(data));
                     if (data.length > 0) {
-                        layer.confirm('确认要删除吗？' + JSON.stringify(data), function (index) {
+                        layer.confirm('确认要删除所有选中文章吗？', function (index) {
 
                             //找到所有被选中的，发异步进行删除
                             //
@@ -210,7 +210,7 @@
 
                             $.ajax({
                                 url:"/admin/post/delete",
-                                async:true,
+                                async:false,
                                 contentType:'application/json; charset=utf-8',
                                 dataType:'application/json; charset=utf-8',
                                 method:'get',
@@ -228,8 +228,8 @@
                             });
                             // $(".layui-table-body .layui-form-checked").parents('tr').remove();
                             //
-                            tableIns.reload();
                             layer.close(index);
+                            tableIns.reload();
                         });
                     } else {
                         layer.msg("请先选择需要删除的文章！");

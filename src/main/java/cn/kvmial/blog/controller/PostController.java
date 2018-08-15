@@ -3,7 +3,7 @@ package cn.kvmial.blog.controller;
 import cn.kvmial.blog.exception.TipException;
 import cn.kvmial.blog.pojo.Post;
 import cn.kvmial.blog.pojo.Result;
-import cn.kvmial.blog.service.PostService;
+import cn.kvmial.blog.service.IPostService;
 import cn.kvmial.blog.util.LayUIPage;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ import java.util.List;
 @RequestMapping("/admin/post")
 public class PostController {
     @Autowired
-    PostService postService;
+    IPostService postService;
 
     @PostMapping(value = "uploadPost", produces = {"application/json"})
     @ResponseBody
@@ -46,6 +47,21 @@ public class PostController {
         return jsonObject;
     }
 
+    @RequestMapping("insertPost")
+    @ResponseBody
+    public Result insertPost(Post post) {
+        if(post.getTitle() == null) {
+            return Result.fail("必填项为空");
+        }
+        try {
+            postService.insertPost(post);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail(e.getMessage());
+        }
+        return Result.ok("插入成功");
+    }
+
     @GetMapping("editor")
     public String editorView(Integer id,Model m) {
         m.addAttribute("id",id);
@@ -57,11 +73,16 @@ public class PostController {
         return "admin/page/postUpload";
     }
 
+    @GetMapping("postInsert")
+    public String insertPostView() {
+        return "admin/page/postInsert";
+    }
+
     @RequestMapping("listPosts")
     @ResponseBody
     public LayUIPage<Post> listPosts(Integer page, Integer limit) {
         PageHelper.startPage(page,limit,"id desc");
-        List<Post> posts = postService.listPosts();
+        List<Post> posts = postService.listPosts(null);
         PageInfo<Post> pageInfo = new PageInfo<>(posts);
         // 将使用pageHelper分页的结果转换为layui能接受的数据格式。
         LayUIPage<Post> layUIPage = new LayUIPage<>();
@@ -73,7 +94,7 @@ public class PostController {
     }
 
 
-    /**
+    /**y
      * 读取post的markdown文件，单独的接口
      * @param id 读取哪个post
      * @return
@@ -108,6 +129,22 @@ public class PostController {
         return Result.ok(post);
     }
 
+
+    @RequestMapping("updatePost")
+    @ResponseBody
+    public Result updatePost(Post post,String markdown) {
+        try {
+            postService.updatePost(post,markdown);
+            return Result.ok("更新文章成功");
+        } catch (IOException | TipException e) {
+            e.printStackTrace();
+            if (e instanceof TipException) {
+                return Result.fail(e.getMessage());
+            } else {
+                return Result.fail("updatePost失败");
+            }
+        }
+    }
 
     /**
      * 删除post

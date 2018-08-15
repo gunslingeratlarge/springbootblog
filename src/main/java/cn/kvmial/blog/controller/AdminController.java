@@ -1,6 +1,6 @@
 package cn.kvmial.blog.controller;
 
-import cn.kvmial.blog.service.PostService;
+import cn.kvmial.blog.service.impl.PostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin")
 public class AdminController {
     @Autowired
-    PostService service;
+    PostServiceImpl service;
 
     @GetMapping(value={"/","/index",""})
     public String indexView() {

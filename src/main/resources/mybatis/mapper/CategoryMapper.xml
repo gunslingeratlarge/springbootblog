@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.kvmial.blog.mapper.CategoryMapper">
+    <select id="listCategories" resultType="Category" parameterType="Category">
+        select * from blog_category
+          <where>
+              <if test="id != null">id = #{id},</if>
+          </where>
+    </select>
+
+    <select id="listSubCategories" resultType="Integer">
+        SELECT id FROM blog_category where pid = #{id}
+    </select>
+
+    <delete id="batchDeleteCategories" parameterType="Integer" >
+      DELETE FROM blog_category where id in
+      <foreach collection="list" open="(" close=")" separator="," item="cid">
+          #{cid}
+      </foreach>
+    </delete>
+
+    <update id="updateCategory" parameterType="Category">
+      UPDATE `blog_category`
+      <set>
+          <if test="name != null and name != ''">name = #{name},</if>
+          <if test="pid != null">pid = #{pid},</if>
+          <if test="sort != null">sort = #{sort},</if>
+      </set>
+        where id = #{id}
+    </update>
+
+    <insert id="insertCategory"  useGeneratedKeys="true" keyProperty="id" parameterType="Category">
+        INSERT INTO `blog`.`blog_category`(`id`, `name`, `pid`, `sort`) VALUES (#{id},#{name},#{pid}, #{sort});
+    </insert>
+
+</mapper>
