@@ -1,17 +1,19 @@
 package cn.kvmial.blog.controller;
 
-import cn.kvmial.blog.exception.TipException;
 import cn.kvmial.blog.pojo.Category;
-import cn.kvmial.blog.pojo.Post;
 import cn.kvmial.blog.pojo.Result;
 import cn.kvmial.blog.service.ICategoryService;
 import cn.kvmial.blog.util.LayUIPage;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,6 +34,7 @@ public class CategoryController {
     @Autowired
     private ICategoryService categoryService;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CategoryController.class);
     @RequestMapping(value = "delete")
     @ResponseBody
     @Transactional(rollbackFor = {Exception.class})
@@ -45,6 +48,7 @@ public class CategoryController {
             e.printStackTrace();
             // 设置需要回滚异常
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            LOGGER.error("delete category error：" + e.getMessage(),e);
             return Result.fail(e.getMessage());
         }
         return Result.ok("删除分类成功");
@@ -61,6 +65,7 @@ public class CategoryController {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            LOGGER.error("update category error：" + e.getMessage(),e);
             return Result.fail(e.getMessage());
         }
 
@@ -82,5 +87,15 @@ public class CategoryController {
         layUIPage.setLimit(limit);
         layUIPage.setPage(pageInfo.getPageNum());
         return layUIPage;
+    }
+
+
+    @GetMapping("categoryInsert")
+    public String categoryInsertView(Model m, Category category) {
+        if (category.getId() != null) {
+            category = categoryService.listCategories(category).get(0);
+        }
+        m.addAttribute("category", category);
+        return "admin/page/categoryInsert";
     }
 }

@@ -13,7 +13,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
 		<link rel="stylesheet" href="../../../res/admin/static/css/font.css" th:href="@{/res/admin/static/css/font.css}">
 		<link rel="stylesheet" href="../../../res/admin/static/css/weadmin.css" th:href="@{/res/admin/static/css/weadmin.css}">
-		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <link rel="stylesheet" th:href="@{/res/admin/lib/zTree_v3/css/metroStyle/metroStyle.css}" type="text/css">
+
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
 		<!--[if lt IE 9]>
 	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
 	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
@@ -53,6 +55,15 @@
                 color:#004974;
 
             }
+
+             ul#treeDemo.ztree {
+                 background: #fff;
+                 height:130px;
+                 overflow-y:auto;
+                 overflow-x:auto;
+                 border:1px solid rgb(201,201,201);
+
+             }
         </style>
 	</head>
 
@@ -78,16 +89,21 @@
                     </div>
                 </div>
 
+                <input type="hidden" name="cid"   jq-error="排序必须为数字" placeholder="父节点id，若无父节点请填-1"
+                       autocomplete="off" class="layui-input" id="pidInput">
 
-                <!--文章分类-->
+
                 <div class="layui-form-item">
-                    <label class="layui-form-label">文章分类</label>
-                    <div class="layui-input-block">
-                        <select name="cid" lay-verify="required">
-                            <option value=""></option>
-                            <option value="1">区块链</option>
-                            <option value="2">JavaEE</option>
-                        </select>
+                    <label class="layui-form-label">分类</label>
+                    <div class="layui-input-inline" style="position:relative;">
+                        <input type="text" jq-error="排序必须为数字" readonly="readonly"
+                               autocomplete="off" class="layui-input" id="pnameInput">
+                        <div id="menuContent" class="menuContent" style="display:none; position: absolute; z-index:99">
+                            <ul id="treeDemo" class="ztree" style="margin-top:0; width:178px;"></ul>
+                        </div>
+                    </div>
+                    <div class="layui-form-inline">
+                        <button class="layui-btn-primary layui-btn" id="menuBtn">选择</button>
                     </div>
                 </div>
 
@@ -125,7 +141,9 @@
 				</div>
 			</form>
 		</div>
-		<script src="../../lib/layui/layui.js" th:src="@{/res/admin/lib/layui/layui.js}" charset="utf-8"></script>
+        <script th:src="@{/res/editor/js/jquery-3.1.1.min.js}"></script>
+        <script src="../../lib/layui/layui.js" th:src="@{/res/admin/lib/layui/layui.js}" charset="utf-8"></script>
+        <script type="text/javascript" th:src="@{/res/admin/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
 		<script type="text/javascript">
 
 			layui.extend({
@@ -204,7 +222,106 @@
                     return false; //阻止提交要写在这里
 				});
 
-			});
+
+                var setting = {
+                    view: {
+                        dblClickExpand: false,
+                        showIcon:false,
+                        showLine:false,
+                        selectedMulti:false
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true,
+                            pIdKey:"pid"
+                        },
+                        key: {
+                            url: "xurl",
+                            name:"name"
+                        }
+                    },
+                    callback: {
+                        onClick: onClick
+                    }
+                };
+                var zNodes;
+                //ajax请求分类列表数据
+                $.ajax({
+                    url:"/admin/category/list",
+                    method:"post",
+                    contentType:"application/json",
+                    cache:false,
+                    async:true,
+                    data:{
+                        "limit":999
+                    },
+                    success: function(ret) {
+                        if (ret) {
+                            console.log(ret);
+                            zNodes = ret.data;
+                            console.log(zNodes);
+                            ztreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+                            ztreeObj.expandAll(true);
+                            // 是修改且pcomment为null，说明是顶级分类
+                            // if ("${category.pn}" == "" && valueStr != '') {
+                            //     $("#pnameInput").attr("value","根分类");
+                            //     $("#pidInput").attr("value",-1);
+                            // }
+                        }
+                    },
+                    error: function (ret) {
+                        console.log(ret);
+                    }
+                });
+
+                // zNodes.sort(function compare(a,b){return a.sort-b.sort;});
+
+                function onClick(e, treeId, treeNode) {
+                    var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+                        nodes = zTree.getSelectedNodes(),
+                        v = "";
+                    for (var i=0, l=nodes.length; i<l; i++) {
+                        v += nodes[i].name + ",";
+                    }
+                    console.log(v);
+                    if (v.length > 0 ) v = v.substring(0, v.length-1);
+                    var pnameInput = $("#pnameInput");
+                    var pidInput = $("#pidInput");
+                    pnameInput.attr("value", v);
+                    pidInput.attr("value", treeNode.id);
+                    hideMenu();
+                }
+                var showed = false;
+                function showMenu() {
+                    if (showed) {
+                        hideMenu();
+                        return;
+                    }
+                    var menuObj = $("#pnameInput");
+                    var menuOffset = $("#pnameInput").offset();
+                    $("#menuContent").css({left:0 + "px", top:36 + "px"}).slideDown("fast");
+
+                    $("body").bind("mousedown", onBodyDown);
+                    showed = true;
+                }
+
+                $("#menuBtn").click(function () {
+                    showMenu();
+                    return false;
+                });
+                function hideMenu() {
+                    $("#menuContent").fadeOut("fast");
+                    $("body").unbind("mousedown", onBodyDown);
+                    showed = false;
+
+                }
+                function onBodyDown(event) {
+                    if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+                        hideMenu();
+                    }
+                }
+
+            });
 		</script>
 	</body>
 

@@ -101,14 +101,18 @@ public class PostController {
      */
     @RequestMapping("getMarkdown")
     @ResponseBody
-    public JSONObject getMarkdown(Integer id) {
+    public Result getMarkdown(Integer id) {
         JSONObject jsonObject = new JSONObject();
         if (id == null) {
-            jsonObject.put("success",false);
-            jsonObject.put("msg", "id不能为空");
-            return jsonObject;
+            return Result.fail("id不能为空");
         } else {
-            return postService.getMarkdown(id);
+            String markdown;
+            try {
+                markdown = postService.getMarkdown(id);
+            } catch (Exception e) {
+                return Result.fail(e.getMessage());
+            }
+            return Result.ok(markdown);
         }
     }
 

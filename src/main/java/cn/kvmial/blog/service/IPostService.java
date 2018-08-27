@@ -56,7 +56,7 @@ public interface IPostService {
      * @param id 文章id
      * @return 字符串形式的文章内容
      */
-     JSONObject getMarkdown(Integer id);
+     String getMarkdown(Integer id);
 
     /**
      * 获得文章的信息

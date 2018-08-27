@@ -47,8 +47,27 @@ public class Post {
     private Date gmtModified;
 
 
+
     public Integer getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", markdownPath='" + markdownPath + '\'' +
+                ", likeNum=" + likeNum +
+                ", commentNum=" + commentNum +
+                ", readNum=" + readNum +
+                ", status=" + status +
+                ", sticky=" + sticky +
+                ", cid=" + cid +
+                ", category='" + category + '\'' +
+                ", gmtCreate=" + gmtCreate +
+                ", gmtModified=" + gmtModified +
+                '}';
     }
 
     public void setId(Integer id) {
@@ -143,21 +162,5 @@ public class Post {
         this.gmtModified = gmtModified;
     }
 
-    @Override
-    public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", markdownPath='" + markdownPath + '\'' +
-                ", likeNum=" + likeNum +
-                ", commentNum=" + commentNum +
-                ", readNum=" + readNum +
-                ", status=" + status +
-                ", sticky=" + sticky +
-                ", cid=" + cid +
-                ", category='" + category + '\'' +
-                ", gmtCreate=" + gmtCreate +
-                ", gmtModified=" + gmtModified +
-                '}';
-    }
+
 }

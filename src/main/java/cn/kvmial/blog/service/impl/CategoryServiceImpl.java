@@ -4,10 +4,8 @@ import cn.kvmial.blog.exception.TipException;
 import cn.kvmial.blog.mapper.CategoryMapper;
 import cn.kvmial.blog.mapper.PostMapper;
 import cn.kvmial.blog.pojo.Category;
-import cn.kvmial.blog.pojo.Post;
 import cn.kvmial.blog.service.ICategoryService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -48,11 +46,6 @@ public class CategoryServiceImpl implements ICategoryService {
         if (count > 0) {
             throw new TipException("不能够删除还有文章的分类");
         }
-
-
-
-
-
     }
 
     @Override

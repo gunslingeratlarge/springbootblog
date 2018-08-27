@@ -1,0 +1,28 @@
+13:32:40.542[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - Starting BlogApplication on SC-201807031159 with PID 13196 (F:\personal\blog\target\classes started by Administrator in F:\personal\blog)
+13:32:40.542[DEBUG][restartedMain]cn.kvmial.blog.BlogApplication - Running with Spring Boot v2.0.4.RELEASE, Spring v5.0.8.RELEASE
+13:32:40.542[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - No active profile set, falling back to default profiles: default
+13:32:41.324[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - Started BlogApplication in 0.813 seconds (JVM running for 11697.028)
+13:41:05.237[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - Starting BlogApplication on SC-201807031159 with PID 13196 (F:\personal\blog\target\classes started by Administrator in F:\personal\blog)
+13:41:05.237[DEBUG][restartedMain]cn.kvmial.blog.BlogApplication - Running with Spring Boot v2.0.4.RELEASE, Spring v5.0.8.RELEASE
+13:41:05.237[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - No active profile set, falling back to default profiles: default
+13:41:06.170[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - Started BlogApplication in 0.957 seconds (JVM running for 12201.874)
+13:41:22.581[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - Starting BlogApplication on SC-201807031159 with PID 13196 (F:\personal\blog\target\classes started by Administrator in F:\personal\blog)
+13:41:22.581[DEBUG][restartedMain]cn.kvmial.blog.BlogApplication - Running with Spring Boot v2.0.4.RELEASE, Spring v5.0.8.RELEASE
+13:41:22.581[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - No active profile set, falling back to default profiles: default
+13:41:23.156[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - Started BlogApplication in 0.594 seconds (JVM running for 12218.861)
+13:42:34.420[DEBUG][http-nio-8082-exec-1]c.k.b.m.PostMapper.listPosts_COUNT - ==>  Preparing: SELECT count(0) FROM `blog_post` 
+13:42:34.421[DEBUG][http-nio-8082-exec-1]c.k.b.m.PostMapper.listPosts_COUNT - ==> Parameters: 
+13:42:34.430[DEBUG][http-nio-8082-exec-1]c.k.b.m.PostMapper.listPosts_COUNT - <==      Total: 1
+13:42:34.431[DEBUG][http-nio-8082-exec-1]c.k.blog.mapper.PostMapper.listPosts - ==>  Preparing: SELECT * FROM `blog_post` order by id desc limit ?,? 
+13:42:34.431[DEBUG][http-nio-8082-exec-1]c.k.blog.mapper.PostMapper.listPosts - ==> Parameters: 0(Integer), 10(Integer)
+13:42:34.441[DEBUG][http-nio-8082-exec-1]c.k.blog.mapper.PostMapper.listPosts - <==      Total: 3
+13:43:22.578[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - Starting BlogApplication on SC-201807031159 with PID 17476 (F:\personal\blog\target\classes started by Administrator in F:\personal\blog)
+13:43:22.581[DEBUG][restartedMain]cn.kvmial.blog.BlogApplication - Running with Spring Boot v2.0.4.RELEASE, Spring v5.0.8.RELEASE
+13:43:22.583[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - No active profile set, falling back to default profiles: default
+13:43:25.246[INFO ][restartedMain]cn.kvmial.blog.BlogApplication - Started BlogApplication in 2.976 seconds (JVM running for 3.741)
+13:43:41.321[DEBUG][http-nio-8082-exec-4]c.k.b.m.PostMapper.listPosts_COUNT - ==>  Preparing: SELECT count(0) FROM `blog_post` 
+13:43:41.335[DEBUG][http-nio-8082-exec-4]c.k.b.m.PostMapper.listPosts_COUNT - ==> Parameters: 
+13:43:41.352[DEBUG][http-nio-8082-exec-4]c.k.b.m.PostMapper.listPosts_COUNT - <==      Total: 1
+13:43:41.354[DEBUG][http-nio-8082-exec-4]c.k.blog.mapper.PostMapper.listPosts - ==>  Preparing: SELECT * FROM `blog_post` order by id desc limit ?,? 
+13:43:41.354[DEBUG][http-nio-8082-exec-4]c.k.blog.mapper.PostMapper.listPosts - ==> Parameters: 0(Integer), 10(Integer)
+13:43:41.364[DEBUG][http-nio-8082-exec-4]c.k.blog.mapper.PostMapper.listPosts - <==      Total: 3

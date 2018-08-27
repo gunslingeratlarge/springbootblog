@@ -146,48 +146,42 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public JSONObject getMarkdown(Integer id) {
+    public String getMarkdown(Integer id) {
         // 首先获得path，再通过path到文件系统中读取
-        JSONObject jsonObject = new JSONObject();
         Post post = postMapper.getPostById(id);
         if(post == null) {
-            jsonObject.put("msg","没有该id的文件");
-            jsonObject.put("success",false);
-            return jsonObject;
+            throw new TipException("没有该id的文章");
         }
 
         String path = post.getMarkdownPath();
         if (path == null) {
-            jsonObject.put("msg","没有markdown路径");
-            jsonObject.put("success",false);
-            return jsonObject;
+            throw new TipException("没有markdown路径");
         }
 
         File file = new File(getDefaultUploadFileDirectory(),path);
         String encoding = "UTF-8";
         Long fileLength = file.length();
         byte[] fileContent = new byte[fileLength.intValue()];
+
         try {
             FileInputStream in = new FileInputStream(file);
             BufferedInputStream bin = new BufferedInputStream(in);
             bin.read(fileContent);
             in.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+            throw new TipException("文件读取异常");
         }
+
+
+        String markDown = "";
         try {
-            String markDown = new String(fileContent, encoding);
-            jsonObject.put("success",true);
-            jsonObject.put("data", markDown);
-            return jsonObject;
+            markDown = new String(fileContent, encoding);
         } catch (UnsupportedEncodingException e) {
-            jsonObject.put("success",false);
-            jsonObject.put("msg", "OS不支持的编码格式");
             e.printStackTrace();
-            return jsonObject;
+            throw new TipException("不支持的文件类型");
         }
+        return markDown;
     }
 
     @Override

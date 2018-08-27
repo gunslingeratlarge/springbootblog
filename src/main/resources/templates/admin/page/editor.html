@@ -38,6 +38,15 @@
         .clearfix {
             zoom:1;
         }
+
+        .tui-editor-contents {
+            font-size:16px;
+        }
+
+        .te-md-container .CodeMirror {
+            font-size:16px;
+        }
+
     </style>
 </head>
 <body>
@@ -60,6 +69,7 @@
     <script src="../../../res/editor/js/highlight.js" th:src="@{/res/editor/js/highlight.js}"></script>
     <script src="../../../res/editor/js/squire-raw.js" th:src="@{/res/editor/js/squire-raw.js}"></script>
     <script src="../../../res/editor/js/tui-editor-Editor.js" th:src="@{/res/editor/js/tui-editor-Editor.js}"></script>
+    <script src="../../../res/editor/js/tui-editor-extScrollSync.min.js" th:src="@{/res/editor/js/tui-editor-extScrollSync.min.js}"></script>
     <script th:inline="javascript">
         var id = [[${id}]];
     </script>
@@ -92,7 +102,8 @@
             previewStyle: 'vertical',
             height: '800px',
             initialEditType: 'markdown',
-            initialValue: content
+            initialValue: content,
+            exts: ['scrollSync', 'colorSyntax']
         });
 
         $.post(

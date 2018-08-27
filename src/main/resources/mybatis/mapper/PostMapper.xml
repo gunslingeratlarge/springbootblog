@@ -5,14 +5,14 @@
 
 <mapper namespace="cn.kvmial.blog.mapper.PostMapper">
     <select id="listPosts" resultMap="postMap" parameterType="Post">
-        select *
-        from `blog_post`
+        select a.*,b.name as category
+        from `blog_post` a left join blog_category b on a.cid = b.id
         <where>
-          <if test="id != null"> and id = #{id},</if>
-          <if test="title != null and title != ''"> and title like "%"#{title}"%",</if>
-          <if test="cid != null"> and cid = #{cid},</if>
-          <if test="status != null"> and status = #{status},</if>
-          <if test="sticky != null"> and is_sticky = #{sticky},</if>
+          <if test="id != null"> and id = #{id}</if>
+          <if test="title != null and title != ''"> and title like "%"#{title}"%"</if>
+          <if test="cid != null"> and cid = #{cid}</if>
+          <if test="status != null"> and status = #{status}</if>
+          <if test="sticky != null"> and is_sticky = #{sticky}</if>
         </where>
     </select>
 

@@ -3,8 +3,15 @@ package cn.kvmial.blog.controller;
 import cn.kvmial.blog.service.impl.PostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 
 /**
  * TODO
@@ -33,6 +40,23 @@ public class AdminController {
     @GetMapping(value="posts")
     public String postView() {
         return "admin/page/posts";
+    }
+
+    @GetMapping(value="category")
+    public String categoryView() {
+        return "admin/page/category";
+    }
+
+    @PostMapping("login")
+    public String doLogin(@RequestParam String username, @RequestParam String password,
+                          HttpServletRequest request, HttpServletResponse response) {
+        if ("kvmial".equals(username) && "123456".equals(password)) {
+            request.getSession().setAttribute("adminUser",username);
+            return "redirect:/admin/index";
+        } else {
+            request.setAttribute("msg", "用户名或密码错误");
+            return "admin/login";
+        }
     }
 
 
