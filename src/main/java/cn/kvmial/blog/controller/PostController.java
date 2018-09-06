@@ -2,6 +2,7 @@ package cn.kvmial.blog.controller;
 
 import cn.kvmial.blog.exception.TipException;
 import cn.kvmial.blog.pojo.Post;
+import cn.kvmial.blog.pojo.PostImage;
 import cn.kvmial.blog.pojo.Result;
 import cn.kvmial.blog.service.IPostService;
 import cn.kvmial.blog.util.LayUIPage;
@@ -46,6 +47,20 @@ public class PostController {
         jsonObject = postService.uploadPost(file, post);
         return jsonObject;
     }
+
+
+    @PostMapping(value = "uploadImage", produces = {"application/json"})
+    @ResponseBody
+    public Result uploadPost(MultipartFile file, PostImage image) {
+
+        if (file == null) {
+            return Result.fail("文件为空");
+        }
+        //postService.uploadImage(file, image);
+        return null;
+    }
+
+
 
     @RequestMapping("insertPost")
     @ResponseBody

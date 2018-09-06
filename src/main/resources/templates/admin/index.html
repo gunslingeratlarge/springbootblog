@@ -294,20 +294,20 @@
 			//加载所需模块，加载完毕调用回调函数判断是否登录
 			layui.use(['jquery','admin'], function(){
 				var $ = layui.jquery;
-				$(function(){
-					var login = JSON.parse(localStorage.getItem("login"));
-					if(login){
-						if(login=0){
-							window.location.href='./admin/login';
-							return false;
-						}else{
-							return false;
-						}
-					}else{
-						window.location.href='./admin/login';
-						return false;
-					}
-				});
+				// $(function(){
+				// 	var login = JSON.parse(localStorage.getItem("login"));
+				// 	if(login){
+				// 		if(login=0){
+				// 			window.location.href='./admin/login';
+				// 			return false;
+				// 		}else{
+				// 			return false;
+				// 		}
+				// 	}else{
+				// 		window.location.href='./admin/login';
+				// 		return false;
+				// 	}
+				// });
 			});
 
 		</script>

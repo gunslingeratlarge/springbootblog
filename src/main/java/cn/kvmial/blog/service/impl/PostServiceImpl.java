@@ -3,6 +3,7 @@ package cn.kvmial.blog.service.impl;
 import cn.kvmial.blog.exception.TipException;
 import cn.kvmial.blog.mapper.PostMapper;
 import cn.kvmial.blog.pojo.Post;
+import cn.kvmial.blog.pojo.PostImage;
 import cn.kvmial.blog.service.IPostService;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,9 @@ public class PostServiceImpl implements IPostService {
         // 先删文件，要不然都不知道文件在哪儿
         for (int id:ids){
             Post postById = postMapper.getPostById(id);
+            if (postById == null) {
+                throw new TipException("该id的post不存在，可能是重复提交了删除请求, id = " + id );
+            }
             String fileName = postById.getMarkdownPath();
             File file = new File(getDefaultUploadFileDirectory(), fileName);
             if (file.exists() && file.isFile()) {
@@ -107,6 +111,19 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
+    // TODO 上传文件涉及到数据库操作，先把数据库部分写完
+    public void uploadImage(MultipartFile file, PostImage image) {
+        String originalFilename = file.getOriginalFilename();
+        String fileName = originalFilename.substring(0,originalFilename.indexOf('.'));
+        if (postMapper.getPostByPath(fileName + ".md") != null) {
+            fileName += "-copy-" + UUID.randomUUID();
+        }
+        String filePath = fileName + ".md";
+
+        File newFile = new File(getDefaultUploadFileDirectory(),filePath);
+    }
+
+    @Override
     public void insertPost(Post post) throws IOException {
         post.setGmtCreate(new Date());
         post.setGmtModified(new Date());
@@ -136,12 +153,12 @@ public class PostServiceImpl implements IPostService {
         String osName = osName1.toLowerCase();
         if (osName.startsWith("mac")) {
             return String.format(
-                    "%s%sLibrary%skvmialBlog", System.getProperty("user.home"), File.separator,
-                    File.separator);
+                    "%s%sLibrary%skvmialBlog%sposts", System.getProperty("user.home"), File.separator,
+                    File.separator, File.separator);
         } else if (osName.startsWith("win")) {
-            return String.format("%s%skvmialBlog", System.getenv("APPDATA"), File.separator);
+            return String.format("%s%skvmialBlog%sposts", System.getenv("APPDATA"), File.separator, File.separator);
         } else {
-            return String.format("%s%s.kvmialBlog", System.getProperty("user.home"), File.separator);
+            return String.format("%s%skvmialBlog%sposts", System.getProperty("user.home"), File.separator,File.separator);
         }
     }
 

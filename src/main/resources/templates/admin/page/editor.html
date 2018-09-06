@@ -103,7 +103,34 @@
             height: '800px',
             initialEditType: 'markdown',
             initialValue: content,
-            exts: ['scrollSync', 'colorSyntax']
+            exts: ['scrollSync', 'colorSyntax'],
+            hooks:{
+                addImageBlobHook: function (blob,callback) {
+                    var formData = new FormData();
+                    formData.append("smfile",blob);
+
+                    $.ajax({
+                        url: 'https://sm.ms/api/upload',
+                        type: 'POST',
+                        dataType:'json',
+                        cache: false,
+                        data: formData,
+                        async:true, // 这里必须得改变为同步提交，否则已经return false了就阻止事件
+                        contentType: false,   //ajax 中 contentType 设置为 false 是为了避免 JQuery 对其操作，从而失去分界符，而使服务器不能正常解析文件
+                        processData: false,
+                        success:function (data) {
+                            console.log(data);
+                            callback(data.data.url,"图片");
+
+                        },
+                        error:function (data) {
+                            alert(JSON.stringify(data));
+                        }
+                    });
+                }
+            }
+
+
         });
 
         $.post(
@@ -159,6 +186,37 @@
                 parent.layer.close(index); //再执行关闭
             },1000);
         }
+
+        function silentlyUpdate() {
+            var title = $("input[name='title']").val();
+            var markdown = editor.getMarkdown();
+            console.log(id);
+            $.ajax({
+                url:"/admin/post/updatePost",
+                data: {
+                    "id":id,
+                    "title":title,
+                    "markdown":markdown
+                },
+                method:'post',
+                success: function (ret) {
+                    if (ret.success) {
+                        console.log(ret);
+                       // layer.msg("更新成功");
+                    }
+                },
+                error:function (ret) {
+                    console.log(ret);
+                }
+            });
+        }
+        
+        window.onload = function (){
+            // 每5分钟保存一次
+        };
+        setInterval(function () {
+            silentlyUpdate();
+        },1000 * 60 * 5);
 
     </script>
 </body>

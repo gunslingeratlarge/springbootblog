@@ -179,6 +179,8 @@
                                 id:id
                             },
                             success: function (ret) {
+                                console.log("ret::");
+                                console.log(ret);
                                 var md = window.markdownit();
                                 var result = md.render(ret.data);
                                 console.log(result);

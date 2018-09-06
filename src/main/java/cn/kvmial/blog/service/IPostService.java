@@ -1,6 +1,7 @@
 package cn.kvmial.blog.service;
 
 import cn.kvmial.blog.pojo.Post;
+import cn.kvmial.blog.pojo.PostImage;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +44,13 @@ public interface IPostService {
      * @return 是否成功信息
      */
      JSONObject uploadPost(MultipartFile file, Post post);
+
+
+     /**
+      * 上传图片，自动获得图片路径
+      */
+    void uploadImage(MultipartFile file, PostImage image);
+
 
     /**
      * 插入文章

@@ -50,6 +50,7 @@ public class Result<T> implements Serializable {
     }
 
     public Result(boolean success,String msg) {
+        this.success = success;
         this.msg = msg;
     }
 
@@ -57,6 +58,9 @@ public class Result<T> implements Serializable {
         return new Result(true,"请求成功");
     }
 
+    public static <T> Result ok(String msg, T data) {
+        return new Result(true, msg);
+    }
     public static <T> Result ok(T data) {
         return new Result(true,"请求成功",data);
     }

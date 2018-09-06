@@ -151,8 +151,11 @@
                         type: 'checkbox'
                     }, {
                         field: 'id', title: 'ID', sort: true, width: 80
-                    }, {
-                        field: 'title', title: '标题', templet: '#usernameTpl', width: 200
+                    },  {
+                        field: 'operate', title: '操作', toolbar: '#operateTpl', width: 100
+                    },
+                        {
+                        field: 'title', title: '标题', templet: '#usernameTpl', width: 350
                     }, {
                         field: 'likeNum', title: '点赞数', sort: true, width: 80
                     }, {
@@ -169,8 +172,6 @@
                         field: 'status', title: '状态', width: 80,templet:'#statusTpl'
                     }, {
                         field: 'sticky', title: '置顶', templet: '#topTpl', width: 100
-                    }, {
-                        field: 'operate', title: '操作', toolbar: '#operateTpl', width: 100
                     }]
                 ],
                 url: "/admin/post/listPosts",
@@ -273,26 +274,31 @@
             window.member_del = function (obj, id) {
                 layer.confirm('确认要删除吗？', function (index) {
                     //发异步删除数据
-                    $(obj).parents("tr").remove();
-                    layer.msg('已删除!', {
-                        icon: 1,
-                        time: 1000
+
+                    $.ajax({
+                        url:"/admin/post/delete",
+                        async:false,
+                        method:'post',
+                        data: {
+                            ids:id
+                        },
+                        success: function(data) {
+                            if (data.success) {
+                                $(obj).parents("tr").remove();
+                                layer.msg('删除成功', {
+                                    icon: 1
+                                });
+                            }
+                        },
+                        error: function (ret) {
+                            console.log(ret);
+                        }
                     });
                 });
             }
 
         });
 
-        function delAll(argument) {
-            var data = tableCheck.getData();
-            layer.confirm('确认要删除吗？' + data, function (index) {
-                //捉到所有被选中的，发异步进行删除
-                layer.msg('删除成功', {
-                    icon: 1
-                });
-                $(".layui-form-checked").not('.header').parents('tr').remove();
-            });
-        }
     </script>
 </div>
 </body>
