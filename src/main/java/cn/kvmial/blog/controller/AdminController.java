@@ -50,7 +50,7 @@ public class AdminController {
     @PostMapping("login")
     public String doLogin(@RequestParam String username, @RequestParam String password,
                           HttpServletRequest request, HttpServletResponse response) {
-        if ("".equals(username) && "".equals(password)) {
+        if ("kvmial".equals(username) && "123456".equals(password)) {
             request.getSession().setAttribute("adminUser",username);
             return "redirect:/admin/index";
         } else {

@@ -111,7 +111,7 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    // TODO 上传文件涉及到数据库操作，先把数据库部分写完
+    // TODO 上传文件涉及到数据库操作，先把数据库部分写完 abandoned 使用了图床，直接在前端完成了图片的上传操作
     public void uploadImage(MultipartFile file, PostImage image) {
         String originalFilename = file.getOriginalFilename();
         String fileName = originalFilename.substring(0,originalFilename.indexOf('.'));
